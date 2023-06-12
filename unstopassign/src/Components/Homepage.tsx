@@ -17,6 +17,7 @@ import {
   ModalOverlay,
   useDisclosure,
   HStack,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -32,16 +33,20 @@ const Homepage = () => {
   const [ticket, setTicket] = useState<string[]>([]);
   const [value, setValue] = useState<string>("");
   const [load, setLoad] = useState<boolean>(false);
+  const [load2, setLoad2] = useState<boolean>(false);
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
 // This function is created for fetching all seats details.
   let getAllSeats = async () => {
+   setLoad2(true)
     try {
+   
+
       let res = await axios.get(
         `https://assignmentbackend-2yf5.onrender.com/seats`
       );
-
+     setLoad2(false)
       setAllSeats(res.data.seats);
     } catch (error) {
       console.log(error);
@@ -136,18 +141,23 @@ try {
             min="1"
             max="7"
           ></input>
-          <Button w="40%" isLoading={load} bgColor={"#5500b2"} color="white" fontWeight={"bold"}  onClick={bookSeats}>
+          <Button w="40%" isLoading={load} isDisabled={load2} bgColor={"#5500b2"} color="white" fontWeight={"bold"}  onClick={bookSeats}>
             BOOK
           </Button>
         </VStack>
       </Box>
       <Box w={{base:"100%",md:"50%",lg:"50%"}}>
         <HStack w="50%" m="auto" mt="20px">
-        <Box h="15px" w="15px" bgColor={"red.500"}></Box> <Text as={"span"} color="blue.500" fontWeight={"bold"}>Booked</Text>
-        <Box h="15px" w="15px" bgColor={"yellow.400"}></Box> <Text as={"span"} color="blue.500" fontWeight={"bold"}>Availible</Text>
+        <Box h="15px" w="15px" bgColor={"red.500"}></Box> <Text as={"span"} color={{base:"white",md:"blue.500",lg:"blue.500"}} fontWeight={"bold"}>Booked</Text>
+        <Box h="15px" w="15px" bgColor={"yellow.400"}></Box> <Text as={"span"} color={{base:"white",md:"blue.500",lg:"blue.500"}} fontWeight={"bold"}>Availible</Text>
         </HStack>
-       
-        <Grid
+       {load2? <Heading w="50%" m="auto" color="#5500b2" mt="10vh"> <Spinner
+  thickness='4px'
+  speed='0.65s'
+  emptyColor='gray.200'
+  color='blue.500'
+  size='xl'
+/> <br /> Seats Loading...</Heading>:  <Grid
           gridTemplateColumns={"repeat(7,1fr)"}
           gap="10px"
           w="60%"
@@ -156,7 +166,8 @@ try {
         >
           {allSeats.length > 0 &&
             allSeats.map((e) => <Seat key={e.seatNumber} {...e} />)}
-        </Grid>
+        </Grid>}
+       
       </Box>
     </Stack>
     
@@ -165,7 +176,7 @@ try {
     <Modal  isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader color="green.400" fontSize={"1.5em"}>congratulations!</ModalHeader>
+          <ModalHeader color="green.400" fontSize={"1.5em"}>Booking Successfull!</ModalHeader>
           <ModalCloseButton />
           <ModalBody color="green.400" fontSize={"1.5em"}>
             <Text>Your Ticket has been booked</Text> <br />
