@@ -41,8 +41,6 @@ const Homepage = () => {
   let getAllSeats = async () => {
    setLoad2(true)
     try {
-   
-
       let res = await axios.get(
         `https://assignmentbackend-2yf5.onrender.com/seats`
       );
@@ -66,6 +64,8 @@ try {
 
 // This condition is checking if input is empty or not.
     if(value===""){
+        setLoad(false)
+
         toast({
             position: 'top',
             title: 'Aleart',
@@ -78,6 +78,8 @@ try {
 
 // This condition is checking if user input is less then or equal to 7 or not.
     }else if(+value>=7){
+        setLoad(false)
+
         toast({
             position: 'top',
             title: 'Aleart',
@@ -100,6 +102,19 @@ try {
     console.log(error)
 }
 }
+// This function is created for reseting all seats to availible.
+let resetAllSeats = async () => {
+  setLoad2(true)
+   try {
+      await axios.patch(
+       `https://assignmentbackend-2yf5.onrender.com/seats/reset`
+     );
+    
+     getAllSeats()
+   } catch (error) {
+     console.log(error);
+   }
+ };
 
 // This useEffect function calling a function on first rendering to fetch intial data.
   useEffect(() => {
@@ -145,6 +160,8 @@ try {
             BOOK
           </Button>
         </VStack>
+       <Button m="auto" mt="15vh"  isDisabled={load2} bgColor={"#5500b2"} color="white" fontWeight={"bold"} onClick={resetAllSeats}>RESET ALL SEATS</Button>
+
       </Box>
       <Box w={{base:"100%",md:"50%",lg:"50%"}}>
         <HStack w="50%" m="auto" mt="20px">
@@ -157,7 +174,7 @@ try {
   emptyColor='gray.200'
   color='blue.500'
   size='xl'
-/> <br /> Seats Loading...</Heading>:  <Grid
+/> <br /> Seats are Loading... <br /> <Heading color={"white"}> Please Wait</Heading></Heading>:  <Grid
           gridTemplateColumns={"repeat(7,1fr)"}
           gap="10px"
           w="60%"
@@ -169,6 +186,7 @@ try {
         </Grid>}
        
       </Box>
+
     </Stack>
     
 {/* this is modal. it will show booking seats numbers */}
