@@ -5,7 +5,7 @@ const { seatModel } = require("../Models/seatModel");
 // This Route is created for getting all Seats details.
 seatRouter.get("/", async (req, res) => {
   try {
-    let seat = await seatModel.find();
+    let seat = await seatModel.find().sort({seatNumber:1});
     res.json({ seats: seat });
   } catch (error) {
     res.json({ err: error });
@@ -18,12 +18,18 @@ seatRouter.get("/", async (req, res) => {
 
 seatRouter.patch("/book", async (req, res) => {
   try {
-    const seatAvail = await seatModel.find({ isBooked: false });
+    const seatAvail = await seatModel.find({ isBooked: false }).sort({seatNumber:1});
 
     if (seatAvail.length < req.body.number) {
-      res.json({ message: "Required seats not availible" });
+      if(seatAvail.length<1){
+      res.json({ message: "Sorry No Seat are availible" });
+
+      }else{
+
+        res.json({ message: `Only ${seatAvail.length} seats availible` });
+      }
     } else {
-      const seat = await seatModel.find();
+      const seat = await seatModel.find().sort({seatNumber:1});
       let reservedSeats;
       let count = 0;
 

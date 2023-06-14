@@ -63,7 +63,7 @@ let bookSeats= async()=>{
 try {
 
 // This condition is checking if input is empty or not.
-    if(value===""){
+    if(value==="" || +value<1){
         setLoad(false)
 
         toast({
@@ -77,7 +77,7 @@ try {
           })
 
 // This condition is checking if user input is less then or equal to 7 or not.
-    }else if(+value>=7){
+    }else if(+value>7){
         setLoad(false)
 
         toast({
@@ -92,11 +92,24 @@ try {
 
 // if above both condition are false this will send request to server to book seats.
       let res =  await axios.patch(`https://assignmentbackend-2yf5.onrender.com/seats/book`,{number:value})
-       setTicket(res.data.seatNo)
-      getAllSeats()
-        onOpen()
+      if(res.data.message){
         setLoad(false)
-        setValue("")
+        toast({
+          position: 'top',
+          title: 'Oops',
+          description: res.data.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
+      }else{
+        setTicket(res.data.seatNo)
+        getAllSeats()
+          onOpen()
+          setLoad(false)
+          setValue("")
+      }
+     
     }
 } catch (error) {
     console.log(error)
@@ -111,6 +124,7 @@ let resetAllSeats = async () => {
      );
     
      getAllSeats()
+     setValue("")
    } catch (error) {
      console.log(error);
    }
